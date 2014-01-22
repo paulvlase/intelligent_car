@@ -1,4 +1,8 @@
 
+"""
+	Paul v0.0:
+	Reprezinta componente encoder de pe masina. Aceasta masoara distanta parcursa.
+"""
 class Encoder(object):
 
 	def __init__(self):

@@ -1,21 +1,36 @@
-# file: robot.py
+# File: robot.py
+
+from PyQt4 import QtGui
 
 from range_sensor import RangeSensor
+from encoder import Encoder
 
 
-
-class Robot():
+"""
+	Paul v0.0:
+	Masina robot.
+"""
+class Robot(object):
 	
+	"""
+		Paul v0.0:
+		realX si realY reprezinta coordonatele de pe plansa.
+		logicX si logicY sunt coordonatele relativ la pozitia de start a
+		robotului; sunt coordonate deduse de robot.
+	"""
 	def __init__(self, realX, realY, realTheta):
 		
-		self.leftRangeSensor = RangeSensor(-1, 0)
-		self.frontRangeSensor = RangeSensor(0, 1)
-		self.rightRangeSensor = RangeSensor(1, 0)
+		self.w = 5
+		self.h = 5
+		
+		self.leftRangeSensor = RangeSensor(self, -1, 0)
+		self.frontRangeSensor = RangeSensor(self, 0, 1)
+		self.rightRangeSensor = RangeSensor(self, 1, 0)
 		
 		self.leftEncoder = Encoder()
 		self.rightEncoder = Encoder()
 		
-		self.realTheta = self.realTheta
+		self.realTheta = realTheta
 		self.realX = realX
 		self.realY = realY
     
@@ -34,6 +49,7 @@ class Robot():
 		self.T2 = 0
 		
 		self.counter = 0
+	
 	
 	def run(self):
 		
@@ -57,11 +73,16 @@ class Robot():
 			self.nextStep()
 			self.counter = 0
 	
+	
 	def draw(self, painter):
 		
 		color = QtGui.QColor(0x00CC66)
 		painter.setPen(0x000000)
-		painter.fillRect(self.x, self.y, self.w, self.h, color)
+		painter.fillRect(self.realX, self.realX, self.w, self.h, color)
+		
+		leftRangeSensor.draw(painter)
+		frontRangeSensor.draw(painter)
+		rightRangeSensor.draw(painter)
 	
 	
 	def nextStep(self):
