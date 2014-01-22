@@ -1,5 +1,7 @@
 # File: range_sensor.py
 
+from PyQt4 import QtGui
+
 import math
 from image_map import ImageMap
 
@@ -56,13 +58,15 @@ class RangeSensor(object):
 		color = QtGui.QColor(0xFF0000)
 		painter.fillRect(x0, y0, 1, 1, color)
 		
+		y = y0
+		
 		for x in range(x0 + 1, x1):
 			if D > 0:
 				y = y + 1
 				painter.fillRect(x, y, 1, 1, color)
 				D = D + (2 * dy - 2 * dx)
 			else:
-				painter.fillRect(x, y, 1, 1, colo)
+				painter.fillRect(x, y, 1, 1, color)
 				D = D + (2 * dy)
 	
 	

@@ -93,6 +93,10 @@ class Map(QtGui.QFrame):
 		self.dragXstart = QMouseEvent.x()
 		self.dragYstart = QMouseEvent.y()
 		
+		self.dragObject = Rectangle()
+		self.dragObject.updateDrag(self.dragXstart,
+				self.dragYstart, self.dragXstart, self.dragYstart)
+		
 		print(QMouseEvent.pos())
 	
 	
@@ -100,7 +104,6 @@ class Map(QtGui.QFrame):
 		self.dragXend = QMouseEvent.x()
 		self.dragYend = QMouseEvent.y()
 		
-		self.dragObject = Rectangle()
 		self.dragObject.updateDrag(self.dragXstart,
 				self.dragYstart, self.dragXend, self.dragYend)
 		
@@ -129,18 +132,13 @@ class Map(QtGui.QFrame):
 		painter = QtGui.QPainter(self)
 		rect = self.contentsRect()
 		
-		MapTop = rect.bottom() - Map.MapHeight
+		#MapTop = rect.bottom() - Map.MapHeight
 		
 		for obj in self.objects:
 			obj.draw(painter)
 		
 		if not self.dragObject is None:
 			self.dragObject.draw(painter)
-		
-		if self.saveToImage == True:
-			pixmap = QtGui.QPixmap.grabWidget(self)
-			ImageMap.image = pixmap.toImage()
-			ImageMap.image.save("image.jpg")
 		
 		self.robot.draw(painter)
 		
@@ -176,8 +174,13 @@ class Map(QtGui.QFrame):
 	def timerEvent(self, event):
 		
 		if event.timerId() == self.timer.timerId():
+			if self.saveToImage == True:
+				self.saveToImage = False
+				pixmap = QtGui.QPixmap.grabWidget(self)
+				ImageMap.image = pixmap.toImage()
+				ImageMap.image.save("image.jpg")
+			
 			self.robot.nextStep()
-		
 		else:
 			super(Map, self).timerEvent(event)
 	

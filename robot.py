@@ -80,9 +80,9 @@ class Robot(object):
 		painter.setPen(0x000000)
 		painter.fillRect(self.realX, self.realX, self.w, self.h, color)
 		
-		leftRangeSensor.draw(painter)
-		frontRangeSensor.draw(painter)
-		rightRangeSensor.draw(painter)
+		self.leftRangeSensor.draw(painter)
+		self.frontRangeSensor.draw(painter)
+		self.rightRangeSensor.draw(painter)
 	
 	
 	def nextStep(self):
