@@ -149,7 +149,7 @@ class RangeSensor(object):
 				
 				if d > 1000:
 					print('A: %d - %d' % (px, py))
-					return d
+				return d
 			
 			if ImageMap.pixel(x0, y0) != 0xFFFFFFFF:
 				
@@ -157,7 +157,7 @@ class RangeSensor(object):
 				
 				if d > 1000:
 					print('B: %d - %d' % (px, py))
-					return d
+				return d
 			
 			if x0 == x1 and y0 == y1:
 				return RangeSensor.MAX_DISTANCE
