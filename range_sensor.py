@@ -18,11 +18,13 @@ class RangeSensor(object):
 		Paul v0.0:
 		x si y sunt din vectorul unitar (x, y).
 	"""
-	def __init__(self, robot, x, y):
+	def __init__(self, robot, relDist, x, y):
 		
+		self.relDist = relDist
 		self.x = x
 		self.y = y
 		self.robot = robot
+		self.distance = 0
 				
 	
 	"""
@@ -46,8 +48,8 @@ class RangeSensor(object):
 		
 		coord = self.rotate()
 	
-		x0 = round(self.robot.posX)
-		y0 = round(self.robot.posY)
+		x0 = round(self.robot.posX + coord[0] * self.relDist)
+		y0 = round(self.robot.posY + coord[1] * self.relDist)
 		
 		dx = coord[0] * RangeSensor.MAX_DISTANCE
 		dy = coord[1] * RangeSensor.MAX_DISTANCE
@@ -74,6 +76,7 @@ class RangeSensor(object):
 		while True:
 			#print('range_sensor.RangeSensor.draw x0: ' + str(x0) + ' y0: ' + str(y0) + ' x1: ' + str(x1) + ' y1: ' + str(y1))
 			painter.fillRect(x0, y0, 1, 1, color)
+			
 			if x0 == x1 and y0 == y1:
 				return
 		
@@ -84,6 +87,7 @@ class RangeSensor(object):
 			
 			if x0 == x1 and y0 == y1:
 				painter.fillRect(x0, y0, 1, 1, color)
+				self.distance = RangeSensor.MAX_DISTANCE
 				return
 			
 			if e2 <  dx:
@@ -94,5 +98,53 @@ class RangeSensor(object):
 	"""
 		Intoarce distanta pana la primul obiect de care se loveste daca este mai mica ca distanta maxima
 	"""
-	def getDistance(self, x0, y0):
-		return 0
+	def getDistance(self):
+		coord = self.rotate()
+	
+		x0 = round(self.robot.posX + coord[0] * self.relDist)
+		y0 = round(self.robot.posY + coord[1] * self.relDist)
+		
+		sX0 = x0
+		sY0 = y0
+		
+		dx = coord[0] * RangeSensor.MAX_DISTANCE
+		dy = coord[1] * RangeSensor.MAX_DISTANCE
+		
+		x1 = round(x0 + dx)
+		y1 = round(y0 + dy)
+		
+		#color = QtGui.QColor(0xFF0000)
+		
+		dx = abs(x1 - x0)
+		dy = abs(y1 - y0)
+		
+		if x0 < x1:
+			sx = 1
+		else:
+			sx = -1
+		if y0 < y1:
+			sy = 1
+		else:
+			sy = -1
+		err = dx - dy
+		
+		while True:
+			#print('range_sensor.RangeSensor.draw x0: ' + str(x0) + ' y0: ' + str(y0) + ' x1: ' + str(x1) + ' y1: ' + str(y1))
+			print('%d' % (ImageMap.image.pixel(x0, y0),))
+			if ImageMap.image.pixel(x0, y0) != 0xFFFFFF:
+				return math.sqrt(math.pow(sX0 - x0, 2) + math.pow(sY0 - y0, 2))
+			
+			if x0 == x1 and y0 == y1:
+				return RangeSensor.MAX_DISTANCE
+			
+			e2 = 2 * err
+			if e2 > -dy: 
+				err = err - dy
+				x0 = x0 + sx
+			
+			if x0 == x1 and y0 == y1:
+				return RangeSensor.MAX_DISTANCE
+			
+			if e2 <  dx:
+				err = err + dx
+				y0 = y0 + sy 

@@ -6,8 +6,10 @@
 import sys, random
 from PyQt4 import QtCore, QtGui
 
-from sim_map import Map
+
+from main_window import MainWindow
 from placeholder import Placeholder
+from sim_map import Map
 
 """
 	Paul v0.0:
@@ -63,6 +65,8 @@ class Simulator(QtGui.QMainWindow):
 		#self.simMap.msg2Statusbar[str].connect(self.statusbar.showMessage)
 		
 		#self.simMap.start()
+		self.setCentralWidget(MainWindow(self))
+
 		self.center()
 		self.setWindowTitle('Simulator')        
 		self.show()
@@ -91,9 +95,9 @@ class Simulator(QtGui.QMainWindow):
 				self.simMap = Map(self)
 				
 				self.setWindowTitle(self.fname + ' - Simulator')
-				self.setCentralWidget(self.simMap)
+				self.setCentralWidget(Placeholder(self))
 				
-				self.simMap.load(self.fname)
+				self.placeholder.simMap.load(self.fname)
 			
 			print(self.fname)
 	
@@ -101,7 +105,7 @@ class Simulator(QtGui.QMainWindow):
 	def saveMap(self, confirmation = False):
 		QtCore.qDebug('simulator.Simulator.saveMap')
 		
-		if (not self.placeholder.simMap is None) and self.placeholder.simMap.changed():
+		if  (not self.placeholder is None) and (not self.placeholder.simMap is None) and self.placeholder.simMap.changed():
 			if self.fname.length() > 0:
 				msgBox = QtGui.QMessageBox();
 				msgBox.setText("The document has been modified.");
@@ -120,7 +124,7 @@ class Simulator(QtGui.QMainWindow):
 					return False
 
 			else:
-				fname = QtGui.QFileDialog.getSaveFileName(self, 'Save file map', '', 'Simualtor maps (*.map)')
+				fname = QtGui.QFileDialog.getSaveFileName(self, 'Save file map', '', 'Simulator maps (*.map)')
 			
 				if fname.length() > 0:
 					self.fname = fname
@@ -133,7 +137,7 @@ class Simulator(QtGui.QMainWindow):
 	
 	def saveAsMap(self):
 		QtCore.qDebug('simulator.Simulator.saveAsMap')
-
+		
 		self.fname = QtGui.QFileDialog.getSaveFileName(self, 'Save file map as', '', 'Simulator maps (*.map)')
 		if fname.length() > 0:
 			self.fname = fname
@@ -143,6 +147,7 @@ class Simulator(QtGui.QMainWindow):
 	
 	
 	def exitSim(self):
+		
 		QtCore.qDebug('simulator.Simulator.exitMap')
 		
 		if self.saveMap() == True:
@@ -153,7 +158,7 @@ class Simulator(QtGui.QMainWindow):
 		fname = self.fname
 		if fname.length() == 0:
 			fname = QtCore.QString('Untitled')
-			
+		
 		if changed == True:
 			self.setWindowTitle(fname + '*' + '- Simulator')
 		else:

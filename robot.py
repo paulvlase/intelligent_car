@@ -28,13 +28,6 @@ class Robot():
 		self.w = 15
 		self.h = 10
 		
-		self.leftRangeSensor = RangeSensor(self, 0, 1)
-		self.frontRangeSensor = RangeSensor(self, 1, 0)
-		self.rightRangeSensor = RangeSensor(self, 0, -1)
-		
-		self.leftEncoder = Encoder()
-		self.rightEncoder = Encoder()
-		
 		self.heading = 0
 		self.posTheta = posTheta
 		self.posX = posX
@@ -55,6 +48,13 @@ class Robot():
 		self.T2 = 0
 		
 		self.counter = 0
+		
+		self.leftEncoder = Encoder()
+		self.rightEncoder = Encoder()
+		
+		self.leftRangeSensor = RangeSensor(self, self.h / 2 + 1, 0, 1)
+		self.frontRangeSensor = RangeSensor(self, self.w / 2 + 1, 1, 0)
+		self.rightRangeSensor = RangeSensor(self, self.h / 2 + 1, 0, -1)
 	
 		self.statsWidget = RobotStatsWidget(self)
 	
@@ -84,23 +84,23 @@ class Robot():
 			dRealY = R * (math.cos(self.heading) - math.cos(dHeading + self.heading))
 		
 		#TODO: This is wrong
-		#dHeading2 = 2 * math.pi * (self.Rw / self.D) * \
-		#		(self.dT1 - self.dT2) / self.Tr
+		dHeading2 = 2 * math.pi * (self.Rw / self.D) * \
+				(self.dT1 - self.dT2) / self.Tr
 
 		
 		#TODO: This is wrong
-		#dRealX2 = self.Rw * math.sin(self.heading) * \
-		#		(self.dT1 + self.dT2) * math.pi / self.Tr
-		#dRealY2 = self.Rw * math.cos(self.heading) * \
-		#		(self.dT1 + self.dT2) * math.pi / self.Tr
+		dRealX2 = self.Rw * math.cos(self.heading) * \
+				(self.dT1 + self.dT2) * math.pi / self.Tr
+		dRealY2 = self.Rw * math.sin(self.heading) * \
+				(self.dT1 + self.dT2) * math.pi / self.Tr
 	
 		#print('dHeading: ' + str(dHeading2) + ', dRealX2: ' + str(dRealX2) + ', dRealY2: ' + str(dRealY2))
 		#print('dRealTheta: ' + str(dHeading) + ', dRealX: ' + str(dRealX) + ', dRealY: ' + str(dRealY))
 		
-		self.posTheta = self.posTheta + dHeading
-		self.heading = self.heading + dHeading
-		self.posX = self.posX + dRealX
-		self.posY = self.posY + dRealY
+		self.posTheta = self.posTheta + dHeading2
+		self.heading = self.heading + dHeading2
+		self.posX = self.posX + dRealX2
+		self.posY = self.posY + dRealY2
 		
 		#print('heading: ' + str(self.heading) + ', posX: ' + str(self.posX) + ', posY: ' + str(self.posY))
 		
@@ -149,6 +149,14 @@ class Robot():
 	
 	
 	def nextStep(self):
+		
+		leftDist = self.leftRangeSensor.getDistance()
+		frontDist = self.frontRangeSensor.getDistance()
+		rightDist = self.rightRangeSensor.getDistance()
+
+		self.statsWidget.setLeftRangeSensorDistance(str(leftDist))
+		self.statsWidget.setFrontRangeSensorDistance(str(frontDist))
+		self.statsWidget.setRightRangeSensorDistance(str(rightDist))
 		
 		self.dT1 = self.dT1 + 1
 		self.dT2 = self.dT2 + 1

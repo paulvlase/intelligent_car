@@ -206,8 +206,9 @@ class Map(QtGui.QFrame):
 		
 		if not self.dragObject is None:
 			self.dragObject.draw(painter)
-		
-		self.robot.draw(painter)
+			
+		if self.saveToImage != True:
+			self.robot.draw(painter)
 	
 	def keyPressEvent(self, event):
 		
@@ -247,14 +248,15 @@ class Map(QtGui.QFrame):
 	def timerEvent(self, event):
 		
 		if event.timerId() == self.timer.timerId():
-			if self.saveToImage == True:
-				self.saveToImage = False
-				pixmap = QtGui.QPixmap.grabWidget(self)
-				ImageMap.image = pixmap.toImage()
-				ImageMap.image.save("image.jpg")
+			# This is an ugly workaround
+			pixmap = QtGui.QPixmap.grabWidget(self)
+			ImageMap.image = pixmap.toImage()
+			ImageMap.image.save("image.jpg")
+			self.saveToImage = False
 			
 			self.robot.move()
 			self.repaint()
+		
 		else:
 			super(Map, self).timerEvent(event)
 	
