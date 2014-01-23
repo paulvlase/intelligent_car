@@ -75,10 +75,10 @@ class RangeSensor(object):
 		
 		while True:
 			#print('range_sensor.RangeSensor.draw x0: ' + str(x0) + ' y0: ' + str(y0) + ' x1: ' + str(x1) + ' y1: ' + str(y1))
-			if x0 < 0 or y0 < 0 or x0 >= ImageMap.image.width() or y0 >= ImageMap.image.height():
+			if x0 < 0 or y0 < 0 or x0 >= ImageMap.width() or y0 >= ImageMap.height():
 				return
 			
-			if ImageMap.image.pixel(x0, y0) != 0xFFFFFFFF:
+			if ImageMap.pixel(x0, y0) != 0xFFFFFFFF:
 				return
 			
 			painter.fillRect(x0, y0, 1, 1, color)
@@ -101,9 +101,9 @@ class RangeSensor(object):
 				y0 = y0 + sy 
 	
 	
-	"""
+	'''
 		Intoarce distanta pana la primul obiect de care se loveste daca este mai mica ca distanta maxima
-	"""
+	'''
 	def getDistance(self):
 		coord = self.rotate()
 	
@@ -143,15 +143,16 @@ class RangeSensor(object):
 			#print('%08X' % (ImageMap.image.pixel(x0, y0),))
 			#print('%d - %d' % (x0, y0))
 			
-			if x0 < 0 or y0 < 0 or x0 >= ImageMap.image.width() or y0 >= ImageMap.image.height():
-				#print('Ies din plansa ca prostul')
+			if x0 < 0 or y0 < 0 or x0 >= ImageMap.width() or y0 >= ImageMap.height():
+				
 				d = math.sqrt(math.pow(sX0 - px, 2.0) + math.pow(sY0 - py, 2.0))
 				
 				if d > 1000:
 					print('A: %d - %d' % (px, py))
 					return d
 			
-			if ImageMap.image.pixel(x0, y0) != 0xFFFFFFFF:
+			if ImageMap.pixel(x0, y0) != 0xFFFFFFFF:
+				
 				d =  math.sqrt(math.pow(sX0 - x0, 2.0) + math.pow(sY0 - y0, 2.0))
 				
 				if d > 1000:
