@@ -25,3 +25,7 @@ class Rectangle(object):
 		
 		self.w = abs(dragXend - dragXstart)
 		self.h = abs(dragYend - dragYstart)
+
+	def __repr__(self):
+		return str(self.x) + ' ' + str(self.y) + ' ' + str(self.w) + ' ' +\
+				str(self.h)

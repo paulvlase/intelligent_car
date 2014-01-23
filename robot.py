@@ -1,5 +1,6 @@
 # File: robot.py
 
+import math
 from PyQt4 import QtGui
 
 from range_sensor import RangeSensor
@@ -20,8 +21,8 @@ class Robot(object):
 	"""
 	def __init__(self, realX, realY, realTheta):
 		
-		self.w = 5
-		self.h = 5
+		self.w = 10
+		self.h = 15
 		
 		self.leftRangeSensor = RangeSensor(self, -1, 0)
 		self.frontRangeSensor = RangeSensor(self, 0, 1)
@@ -38,9 +39,9 @@ class Robot(object):
 		self.logicalX = 0
 		self.logicalY = 0
     
-		self.Rw = 0
-		self.Tr = 12
-		self.D  = 5
+		self.Rw = 9
+		self.Tr = 24
+		self.D  = 9
 		
 		self.dT1 = 0
 		self.dT2 = 0
@@ -51,22 +52,29 @@ class Robot(object):
 		self.counter = 0
 	
 	
-	def run(self):
+	def move(self):
 		
-		self.leftEncoder.addTicks(self.T1)
+		self.leftEncoder.addTicks(self.dT1)
 		self.rightEncoder.addTicks(self.dT2)
 		
-		dRealTheta = 2 * math.pi * (Rw / D) * (self.dT1 - self.dT2) / Tr
+		print('dT1: ' + str(self.dT1) + ', dT2: ' + str(self.dT2))
+		
+		dRealTheta = 2 * math.pi * (self.Rw / self.D) * \
+				(self.dT1 - self.dT2) / self.Tr
 		
 		self.realTheta = self.realTheta + dRealTheta
 		
-		self.dRealX = self.Rw * math.cos(self.realTheta) * \
-			(self.dT1 + self.dT2) * math.pi / self.Tr
-		self.dRealY = self.Rw * math.sin(self.realTheta) * \
-			(self.dT1 + self.dT2) * math.pi / self.Tr
+		dRealX = self.Rw * math.cos(self.realTheta) * \
+				(self.dT1 + self.dT2) * math.pi / self.Tr
+		dRealY = self.Rw * math.sin(self.realTheta) * \
+				(self.dT1 + self.dT2) * math.pi / self.Tr
 	
-		self.realX = self.realX + self.dRealX
-		self.realY = self.realY + self.dRealY
+		print('dRealTheta: ' + str(dRealTheta) + ', dRealX: ' + str(dRealX) + ', dRealY: ' + str(dRealY))
+	
+		self.realX = self.realX + dRealX
+		self.realY = self.realY + dRealY
+		
+		print('realTheta: ' + str(self.realTheta) + ', realX: ' + str(self.realX) + ', realY: ' + str(self.realY))
 		
 		self.counter += 1
 		if self.counter == 5:
@@ -80,15 +88,15 @@ class Robot(object):
 		painter.setPen(0x000000)
 		painter.fillRect(self.realX, self.realX, self.w, self.h, color)
 		
-		self.leftRangeSensor.draw(painter)
-		self.frontRangeSensor.draw(painter)
-		self.rightRangeSensor.draw(painter)
+		self.leftRangeSensor.draw(painter, QtGui.QColor(0x00FF00))
+		self.frontRangeSensor.draw(painter, QtGui.QColor(0xFF0000))
+		self.rightRangeSensor.draw(painter, QtGui.QColor(0x0000FF))
 	
 	
 	def nextStep(self):
 		
-		self.dT1 = self.dT1 + 0.01
-		self.dT2 = self.dT2 + 0.01
+		#self.dT1 = self.dT1 + 1
+		#self.dT2 = self.dT2 + 1
 	
 		self.T1 = 0
 		self.T2 = 0

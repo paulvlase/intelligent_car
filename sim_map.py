@@ -15,25 +15,27 @@ from rectangle import Rectangle
 class Map(QtGui.QFrame):
 	
 	msg2Statusbar = QtCore.pyqtSignal(str)
+	changedStatus = QtCore.pyqtSignal(bool)
 	
 	MapWidth = 360
 	MapHeight = 180
 	Speed = 300
-	
 	
 	def __init__(self, parent):
 		super(Map, self).__init__(parent)
 		
 		self.initMap()
 	
+		
 	
 	def initMap(self):
+		QtCore.qDebug('sim_map.Map.initMap')
 		
 		self.timer = QtCore.QBasicTimer()
 		
 		self.objects = []
-		
 		self.setFocusPolicy(QtCore.Qt.StrongFocus)
+		self.resize(Map.MapWidth, Map.MapHeight)
 		self.isStarted = False
 		self.isPaused = False
 		self.clearMap()
@@ -46,7 +48,10 @@ class Map(QtGui.QFrame):
 	
 		self.saveToImage = True
 		
-		self.robot = Robot(100, 100, math.pi)
+		self.robot = Robot(100, 100, math.pi / 4)
+		
+		self.mapChanged = False
+	
 	
 	def getObjectAt(self, x, y):
 		pass
@@ -56,7 +61,56 @@ class Map(QtGui.QFrame):
 		pass
 	
 	
+	def load(self, fname):
+		print("[sim_map.Map.load]")
+		
+		with open(fname) as fp:
+			
+			fp.readline()
+			
+			line = fp.readline().strip().split()
+			Map.MapWidth = int(line[0])
+			Map.MapHeight = int(line[1])
+			Map.Speed = int(line[2])
+			
+			fp.readline()
+			
+			line = fp.readline().strip()
+			nObjects = int(line)
+			
+			fp.readline()
+			
+			for i in range(nObjects):
+				line = fp.readline().strip().split()
+				
+				x = int(line[0])
+				y = int(line[1])
+				w = int(line[2])
+				h = int(line[3])
+				
+				print(line)
+				self.objects.append(Rectangle(x, y, w, h))
+	
+	
+	def save(self, fname):
+		print("[sim_map.Map.save]")
+		
+		self.setChanged(False)
+		
+		with open(fname, 'w') as fp:
+			fp.write('# MapWidth MapHeight Speed\n') 
+			fp.write(str(Map.MapWidth) + ' ' + str(Map.MapHeight) + ' ' + str(Map.Speed) + '\n')
+			
+			fp.write('# Number of objects\n')
+			fp.write(str(len(self.objects)) + '\n')
+			
+			fp.write('# x y width height\n')
+			for obj in self.objects:
+				fp.write(str(obj) + '\n')
+	
+	
 	def start(self):
+		QtCore.qDebug('sim_map.Map.start')
 		
 		if self.isPaused:
 			return
@@ -72,6 +126,7 @@ class Map(QtGui.QFrame):
 	
 	
 	def pause(self):
+		QtCore.qDebug('sim_map.Map.pause')
 		
 		if not self.isStarted:
 			return
@@ -97,7 +152,8 @@ class Map(QtGui.QFrame):
 		self.dragObject.updateDrag(self.dragXstart,
 				self.dragYstart, self.dragXstart, self.dragYstart)
 		
-		print(QMouseEvent.pos())
+		#TODO
+		#print(QMouseEvent.pos())
 	
 	
 	def mouseMoveEvent(self, QMouseEvent):
@@ -107,7 +163,8 @@ class Map(QtGui.QFrame):
 		self.dragObject.updateDrag(self.dragXstart,
 				self.dragYstart, self.dragXend, self.dragYend)
 		
-		print(QMouseEvent.pos())
+		#TODO
+		#print(QMouseEvent.pos())
 		self.repaint()
 	
 	
@@ -122,8 +179,10 @@ class Map(QtGui.QFrame):
 		self.dragObject = None
 		
 		self.saveToImage = True
+		self.setChanged(True)
 		
-		print(QMouseEvent.pos())
+		#TODO
+		#print(QMouseEvent.pos())
 		self.repaint()
 	
 	
@@ -132,7 +191,9 @@ class Map(QtGui.QFrame):
 		painter = QtGui.QPainter(self)
 		rect = self.contentsRect()
 		
-		#MapTop = rect.bottom() - Map.MapHeight
+		color = QtGui.QColor(0xffffff)
+		painter.setPen(0xff0000)
+		painter.fillRect(0, 0, rect.bottom(), rect.right(), color)
 		
 		for obj in self.objects:
 			obj.draw(painter)
@@ -141,17 +202,19 @@ class Map(QtGui.QFrame):
 			self.dragObject.draw(painter)
 		
 		self.robot.draw(painter)
-		
-		print("Paint event fired")
 	
 	
 	def keyPressEvent(self, event):
 		
+		key = event.key()
+		
+		if key == QtCore.Qt.Key_S:
+			self.start()
+			return
+		
 		if not self.isStarted:
 			super(Map, self).keyPressEvent(event)
 			return
-		
-		key = event.key()
 		
 		if key == QtCore.Qt.Key_P:
 			self.pause()
@@ -160,12 +223,17 @@ class Map(QtGui.QFrame):
 		if self.isPaused:
 			return
 		
-		elif key == QtCore.Qt.Key_S:
-			pixmap = QtGui.QPixmap.grabWidget(self)
-			image = pixmap.toImage()
-			image.save("image.jpg")
-			
-			self.saveToImage = False
+		elif key == QtCore.Qt.Key_Q:
+			self.robot.dT1 = self.robot.dT1 - 1;
+		
+		elif key == QtCore.Qt.Key_A:
+			self.robot.dT1 = self.robot.dT1 + 1;
+		
+		elif key == QtCore.Qt.Key_E:
+			self.robot.dT2 = self.robot.dT2 - 1;
+		
+		elif key == QtCore.Qt.Key_D:
+			self.robot.dT2 = self.robot.dT2 + 1;
 		
 		else:
 			super(Map, self).keyPressEvent(event)
@@ -180,10 +248,20 @@ class Map(QtGui.QFrame):
 				ImageMap.image = pixmap.toImage()
 				ImageMap.image.save("image.jpg")
 			
-			self.robot.nextStep()
+			self.robot.move()
 		else:
 			super(Map, self).timerEvent(event)
 	
 	
 	def clearMap(self):
 		self.objects = []
+
+
+	def changed(self):
+		return self.mapChanged
+
+
+	def setChanged(self, mapChanged):
+		self.mapChanged = mapChanged
+		self.changedStatus.emit(bool(self.mapChanged))
+	

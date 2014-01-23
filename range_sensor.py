@@ -12,7 +12,7 @@ from image_map import ImageMap
 """
 class RangeSensor(object):
 	
-	MAX_DISTANCE = 40
+	MAX_DISTANCE = 100
 	
 	"""
 		Paul v0.0:
@@ -42,33 +42,50 @@ class RangeSensor(object):
 	"""
 		Deseneaza pe harta o linie ce reprezinta distanta senzorului si directia acestuia
 	"""
-	def draw(self, painter):
+	def draw(self, painter, color):
 	
 		x0 = self.robot.realX
 		y0 = self.robot.realY
 		
-		dx = self.x * 40
-		dy = self.y * 40
+		dx = self.x * RangeSensor.MAX_DISTANCE
+		dy = self.y * RangeSensor.MAX_DISTANCE
 		
 		x1 = x0 + dx
 		y1 = y0 + dy
-
-		D = 2 * dy - dx
 		
-		color = QtGui.QColor(0xFF0000)
+		#color = QtGui.QColor(0xFF0000)
 		painter.fillRect(x0, y0, 1, 1, color)
 		
-		y = y0
+		dx = abs(x1 - x0)
+		dy = abs(y1 - y0)
 		
-		for x in range(x0 + 1, x1):
-			if D > 0:
-				y = y + 1
-				painter.fillRect(x, y, 1, 1, color)
-				D = D + (2 * dy - 2 * dx)
-			else:
-				painter.fillRect(x, y, 1, 1, color)
-				D = D + (2 * dy)
-	
+		if x0 < x1:
+			sx = 1
+		else:
+			sx = -1
+		if y0 < y1:
+			sy = 1
+		else:
+			sy = -1
+		err = dx - dy
+		
+		while True:
+			painter.fillRect(x0, y0, 1, 1, color)
+			if x0 == x1 and y0 == y1:
+				return
+		
+			e2 = 2 * err
+			if e2 > -dy: 
+				err = err - dy
+				x0 = x0 + sx
+			
+			if x0 == x1 and y0 == y1:
+				painter.fillRect(x0, y0, 1, 1, color)
+				return
+			
+			if e2 <  dx:
+				err = err + dx
+				y0 = y0 + sy 
 	
 	
 	"""
