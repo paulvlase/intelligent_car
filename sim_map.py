@@ -17,25 +17,28 @@ class Map(QtGui.QFrame):
 	msg2Statusbar = QtCore.pyqtSignal(str)
 	changedStatus = QtCore.pyqtSignal(bool)
 	
-	MapWidth = 360
-	MapHeight = 180
-	Speed = 300
+	MapWidth = 1024
+	MapHeight = 640
+	Speed = 200
 	
 	def __init__(self, parent):
 		super(Map, self).__init__(parent)
-		
+	
+		self.parent = parent
+	
 		self.initMap()
 	
-		
 	
 	def initMap(self):
 		QtCore.qDebug('sim_map.Map.initMap')
 		
 		self.timer = QtCore.QBasicTimer()
+		self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+		self.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Raised)
 		
 		self.objects = []
 		self.setFocusPolicy(QtCore.Qt.StrongFocus)
-		self.resize(Map.MapWidth, Map.MapHeight)
+		self.setFixedSize(Map.MapWidth, Map.MapHeight)
 		self.isStarted = False
 		self.isPaused = False
 		self.clearMap()
@@ -52,6 +55,8 @@ class Map(QtGui.QFrame):
 		
 		self.mapChanged = False
 	
+		self.statsWidget = self.robot.getStatsWidget()
+		self.setStatsWidget()
 	
 	def getObjectAt(self, x, y):
 		pass
@@ -193,7 +198,8 @@ class Map(QtGui.QFrame):
 		
 		color = QtGui.QColor(0xffffff)
 		painter.setPen(0xff0000)
-		painter.fillRect(0, 0, rect.bottom(), rect.right(), color)
+		QtCore.qDebug('%d %d %d %d' % (rect.top(), rect.left(), rect.bottom(), rect.right())) 
+		painter.fillRect(0, 0, rect.right(), rect.bottom(), color)
 		
 		for obj in self.objects:
 			obj.draw(painter)
@@ -202,7 +208,6 @@ class Map(QtGui.QFrame):
 			self.dragObject.draw(painter)
 		
 		self.robot.draw(painter)
-	
 	
 	def keyPressEvent(self, event):
 		
@@ -224,16 +229,16 @@ class Map(QtGui.QFrame):
 			return
 		
 		elif key == QtCore.Qt.Key_Q:
-			self.robot.dT1 = self.robot.dT1 - 1;
+			self.robot.increaseLeftMotorSpeed(10)
 		
 		elif key == QtCore.Qt.Key_A:
-			self.robot.dT1 = self.robot.dT1 + 1;
+			self.robot.increaseLeftMotorSpeed(-10)
 		
 		elif key == QtCore.Qt.Key_E:
-			self.robot.dT2 = self.robot.dT2 - 1;
+			self.robot.increaseRightMotorSpeed(10)
 		
 		elif key == QtCore.Qt.Key_D:
-			self.robot.dT2 = self.robot.dT2 + 1;
+			self.robot.increaseRightMotorSpeed(-10)
 		
 		else:
 			super(Map, self).keyPressEvent(event)
@@ -266,3 +271,7 @@ class Map(QtGui.QFrame):
 		self.mapChanged = mapChanged
 		self.changedStatus.emit(bool(self.mapChanged))
 	
+	
+	def setStatsWidget(self):
+
+		self.parent.setStatsWidget(self.statsWidget)

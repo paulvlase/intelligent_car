@@ -28,27 +28,29 @@ class RangeSensor(object):
 	"""
 		Odata cu rotirea masinii se roteste si senzorul
 	"""
-	def rotate(self, theta):
-		cs = math.cos(theta)
-		sn = math.sin(theta)
+	def rotate(self):
+		
+		cs = math.cos(self.robot.posTheta)
+		sn = math.sin(self.robot.posTheta)
 		
 		px = self.x * cs - self.y * sn
 		py = self.x * sn + self.y * cs
 		
-		self.x = px
-		self.y = py
+		return (px, py)
 	
 	
 	"""
 		Deseneaza pe harta o linie ce reprezinta distanta senzorului si directia acestuia
 	"""
 	def draw(self, painter, color):
-	
-		x0 = self.robot.realX
-		y0 = self.robot.realY
 		
-		dx = self.x * RangeSensor.MAX_DISTANCE
-		dy = self.y * RangeSensor.MAX_DISTANCE
+		coord = self.rotate()
+	
+		x0 = self.robot.posX
+		y0 = self.robot.posY
+		
+		dx = coord[0] * RangeSensor.MAX_DISTANCE
+		dy = coord[1] * RangeSensor.MAX_DISTANCE
 		
 		x1 = x0 + dx
 		y1 = y0 + dy
@@ -70,6 +72,7 @@ class RangeSensor(object):
 		err = dx - dy
 		
 		while True:
+			#print('range_sensor.RangeSensor.draw x0: ' + str(x0) + ' y0: ' + str(y0) + ' x1: ' + str(x1) + ' y1: ' + str(y1))
 			painter.fillRect(x0, y0, 1, 1, color)
 			if x0 == x1 and y0 == y1:
 				return

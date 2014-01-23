@@ -7,7 +7,7 @@ import sys, random
 from PyQt4 import QtCore, QtGui
 
 from sim_map import Map
-
+from placeholder import Placeholder
 
 """
 	Paul v0.0:
@@ -25,7 +25,7 @@ class Simulator(QtGui.QMainWindow):
 		
 		self.fname = QtCore.QString('')
 		
-		self.simMap = None
+		self.placeholder = None
 		
 		newMapAction = QtGui.QAction(QtGui.QIcon('new.png'), 'New map', self)
 		newMapAction.setShortcut('Ctrl+N')
@@ -63,7 +63,6 @@ class Simulator(QtGui.QMainWindow):
 		#self.simMap.msg2Statusbar[str].connect(self.statusbar.showMessage)
 		
 		#self.simMap.start()
-		
 		self.center()
 		self.setWindowTitle('Simulator')        
 		self.show()
@@ -73,12 +72,12 @@ class Simulator(QtGui.QMainWindow):
 		QtCore.qDebug('simulator.Simulator.newMap')
 		
 		self.fname = QtCore.QString('')
-		self.simMap = Map(self)
+		self.placeholder = Placeholder(self)
 		
 		self.setWindowTitle('Untitled - Simulator')
-		self.setCentralWidget(self.simMap)
-		
-		self.simMap.changedStatus[bool].connect(self.setChanged)
+		self.setCentralWidget(Placeholder(self))
+		self.placeholder.simMap.changedStatus[bool].connect(self.setChanged)
+	
 	
 	def openMap(self):
 		QtCore.qDebug('simulator.Simulator.openMap')
@@ -102,7 +101,7 @@ class Simulator(QtGui.QMainWindow):
 	def saveMap(self, confirmation = False):
 		QtCore.qDebug('simulator.Simulator.saveMap')
 		
-		if (not self.simMap is None) and self.simMap.changed():
+		if (not self.placeholder.simMap is None) and self.placeholder.simMap.changed():
 			if self.fname.length() > 0:
 				msgBox = QtGui.QMessageBox();
 				msgBox.setText("The document has been modified.");
@@ -113,7 +112,7 @@ class Simulator(QtGui.QMainWindow):
 				ret = msgBox.exec_();
 				
 				if ret == QMessageBox.Save:
-					self.simMap.save(self.fname)
+					self.placeholder.simMap.save(self.fname)
 					return True
 				elif ret == QMessageBox.Discard:
 					return True
@@ -127,9 +126,7 @@ class Simulator(QtGui.QMainWindow):
 					self.fname = fname
 			
 			if self.fname.length() > 0:
-				self.simMap.save(self.fname)
-			
-			#self.simMap.save(fname)
+				self.placeholder.simMap.save(self.fname)
 			
 			print(self.fname)
 		return True
@@ -140,7 +137,7 @@ class Simulator(QtGui.QMainWindow):
 		self.fname = QtGui.QFileDialog.getSaveFileName(self, 'Save file map as', '', 'Simulator maps (*.map)')
 		if fname.length() > 0:
 			self.fname = fname
-			self.simMap.save(self.fname)
+			self.placeholder.simMap.save(self.fname)
 		
 		print(self.fname)
 	
@@ -169,7 +166,7 @@ class Simulator(QtGui.QMainWindow):
 		size = self.geometry()
 		self.move((screen.width() - size.width()) / 2, 
 			(screen.height() - size.height()) /2)
-	
+
 
 def main():
 	
