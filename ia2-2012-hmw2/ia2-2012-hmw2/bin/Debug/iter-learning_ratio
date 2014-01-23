@@ -1,0 +1,6 @@
+iter = 2
+learningMae = 0.148321290656157, learningMre = 0
+testingMae = 0.149045905783706, testingMre = 0
+iter = 2
+learningMae = 0.150132753301811, learningMre = 0
+testingMae = 0.146153873720428, testingMre = 0

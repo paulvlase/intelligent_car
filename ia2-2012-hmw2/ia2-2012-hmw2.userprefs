@@ -1,0 +1,32 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="ia2-2012-hmw2/BackpropagationNetwork.cs">
+    <Files>
+      <File FileName="ia2-2012-hmw2/Main.cs" Line="95" Column="36" />
+      <File FileName="ia2-2012-hmw2/BackpropagationNetwork.cs" Line="172" Column="4" />
+      <File FileName="ia2-2012-hmw2/Neuron.cs" Line="67" Column="30" />
+      <File FileName="ia2-2012-hmw2/Config.cs" Line="8" Column="42" />
+      <File FileName="ia2-2012-hmw2/Example.cs" Line="17" Column="7" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.ItemProperties.ia2-2012-hmw2>
+    <MonoDevelop.Ide.CustomExecutionModes>
+      <Data Name="Default (Custom)" Id="f056e66a-f69a-4cc0-ac04-080ac74f3754" ModeId="Default">
+        <CommandData>
+          <Item Key="MonoDevelop.Ide.Execution.CustomArgsCustomizer">
+            <Value Arguments="BodyFat.csv" WorkingDirectory="/safe/facultate/4b/ia2/ia2-2012-hmw2/ia2-2012-hmw2/bin/Debug" ctype="CustomArgsExecutionModeData">
+              <EnvironmentVariables />
+            </Value>
+          </Item>
+          <Item Key="MonoDevelop.Ide.Execution.MonoExecutionCustomizer">
+            <Value ctype="MonoExecutionParameters" />
+          </Item>
+        </CommandData>
+      </Data>
+    </MonoDevelop.Ide.CustomExecutionModes>
+  </MonoDevelop.Ide.ItemProperties.ia2-2012-hmw2>
+</Properties>
