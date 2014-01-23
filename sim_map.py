@@ -48,7 +48,7 @@ class Map(QtGui.QFrame):
 	
 		self.saveToImage = True
 		
-		self.robot = Robot(100, 100, math.pi / 4)
+		self.robot = Robot(100, 100, 0)
 		
 		self.mapChanged = False
 	

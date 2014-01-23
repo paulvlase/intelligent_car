@@ -59,15 +59,35 @@ class Robot(object):
 		
 		print('dT1: ' + str(self.dT1) + ', dT2: ' + str(self.dT2))
 		
-		dRealTheta = 2 * math.pi * (self.Rw / self.D) * \
-				(self.dT1 - self.dT2) / self.Tr
+		b = 9
+		
+		if (self.dT2 - self.dT1) < 0.00001:
+			dRealTheta = 0
+			dRealX = self.dT1 * math.cos(self.realTheta)
+			dRealY = self.dT1 * math.sin(self.realTheta)
+		elif (self.dT2 - self.dT1) > 24:
+			dRealTheta = (self.dT2 - self.dT1) / b
+			dRealX = 0
+			dRealY = 0
+		else:
+			R = b / 2 * (self.dT2 + self.dT1) / (self.dT2 - self.dT1)
+		
+			dRealTheta = (self.dT2 - self.dT1) / b
+		
+			dRealX = R * (math.sin(dRealTheta + self.realTheta) - math.sin(self.realTheta))
+			dRealY = R * (math.cos(self.realTheta) - math.cos(dRealTheta + self.realTheta))
+		
+		#TODO: This is wrong
+		#dRealTheta = 2 * math.pi * (self.Rw / self.D) * \
+		#		(self.dT1 + self.dT2) / self.Tr
 		
 		self.realTheta = self.realTheta + dRealTheta
 		
-		dRealX = self.Rw * math.cos(self.realTheta) * \
-				(self.dT1 + self.dT2) * math.pi / self.Tr
-		dRealY = self.Rw * math.sin(self.realTheta) * \
-				(self.dT1 + self.dT2) * math.pi / self.Tr
+		#TODO: This is wrong
+		#dRealX = self.Rw * math.cos(self.realTheta) * \
+		#		(self.dT1 - self.dT2) * math.pi / self.Tr
+		#dRealY = self.Rw * math.sin(self.realTheta) * \
+		#		(self.dT1 - self.dT2) * math.pi / self.Tr
 	
 		print('dRealTheta: ' + str(dRealTheta) + ', dRealX: ' + str(dRealX) + ', dRealY: ' + str(dRealY))
 	
