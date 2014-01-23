@@ -192,14 +192,31 @@ class Map(QtGui.QFrame):
 	
 	
 	def paintEvent(self, event):
-		
-		painter = QtGui.QPainter(self)
 		rect = self.contentsRect()
 		
-		color = QtGui.QColor(0xffffff)
-		painter.setPen(0xff0000)
+		if self.saveToImage == True:
+			
+			ImageMap.image = QtGui.QImage(rect.right(), rect.bottom(), QtGui.QImage.Format_RGB32)
+			imagePainter = QtGui.QPainter(ImageMap.image)
+			
+			self.draw(imagePainter)
+			
+			ImageMap.image.save('image.jpg')
+			
+			self.saveToImage = False
+	
+		painter = QtGui.QPainter(self)
+		self.draw(painter)
+	
+	
+	def draw(self, painter):
+		
+		rect = self.contentsRect()
+		
+		painter.setPen(QtGui.QColor(0xff0000))
+		#TODO
 		#QtCore.qDebug('[sim_map.Map.paintEvent] %d %d %d %d' % (rect.top(), rect.left(), rect.bottom(), rect.right())) 
-		painter.fillRect(0, 0, rect.right(), rect.bottom(), color)
+		painter.fillRect(0, 0, rect.right(), rect.bottom(), QtGui.QColor(0xffffff))
 		
 		for obj in self.objects:
 			obj.draw(painter)
@@ -209,6 +226,7 @@ class Map(QtGui.QFrame):
 			
 		if self.saveToImage != True:
 			self.robot.draw(painter)
+	
 	
 	def keyPressEvent(self, event):
 		
@@ -248,11 +266,6 @@ class Map(QtGui.QFrame):
 	def timerEvent(self, event):
 		
 		if event.timerId() == self.timer.timerId():
-			# This is an ugly workaround
-			pixmap = QtGui.QPixmap.grabWidget(self)
-			ImageMap.image = pixmap.toImage()
-			ImageMap.image.save("image.jpg")
-			self.saveToImage = False
 			
 			self.robot.move()
 			self.repaint()

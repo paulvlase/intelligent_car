@@ -128,10 +128,19 @@ class RangeSensor(object):
 			sy = -1
 		err = dx - dy
 		
+		px = x0
+		py = y0
+		
 		while True:
+			#TODO cleanup
 			#print('range_sensor.RangeSensor.draw x0: ' + str(x0) + ' y0: ' + str(y0) + ' x1: ' + str(x1) + ' y1: ' + str(y1))
-			print('%d' % (ImageMap.image.pixel(x0, y0),))
-			if ImageMap.image.pixel(x0, y0) != 0xFFFFFF:
+			#print('%08X' % (ImageMap.image.pixel(x0, y0),))
+			print('%d - %d' % (x0, y0))
+			if x0 < 0 or y0 < 0 or x0 >= ImageMap.image.width() or y0 >= ImageMap.image.height():
+				print('Ies din plansa ca prostul')
+				return math.sqrt(math.pow(sX0 - px, 2) + math.pow(sY0 - py, 2))
+			
+			if ImageMap.image.pixel(x0, y0) != 0xFFFFFFFF:
 				return math.sqrt(math.pow(sX0 - x0, 2) + math.pow(sY0 - y0, 2))
 			
 			if x0 == x1 and y0 == y1:
@@ -140,6 +149,7 @@ class RangeSensor(object):
 			e2 = 2 * err
 			if e2 > -dy: 
 				err = err - dy
+				px = x0
 				x0 = x0 + sx
 			
 			if x0 == x1 and y0 == y1:
@@ -147,4 +157,5 @@ class RangeSensor(object):
 			
 			if e2 <  dx:
 				err = err + dx
+				py = y0
 				y0 = y0 + sy 

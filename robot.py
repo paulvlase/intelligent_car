@@ -52,9 +52,9 @@ class Robot():
 		self.leftEncoder = Encoder()
 		self.rightEncoder = Encoder()
 		
-		self.leftRangeSensor = RangeSensor(self, self.h / 2 + 1, 0, 1)
+		self.leftRangeSensor = RangeSensor(self, self.h / 2 + 1, 0, -1)
 		self.frontRangeSensor = RangeSensor(self, self.w / 2 + 1, 1, 0)
-		self.rightRangeSensor = RangeSensor(self, self.h / 2 + 1, 0, -1)
+		self.rightRangeSensor = RangeSensor(self, self.h / 2 + 1, 0, 1)
 	
 		self.statsWidget = RobotStatsWidget(self)
 	
@@ -158,12 +158,13 @@ class Robot():
 		self.statsWidget.setFrontRangeSensorDistance(str(frontDist))
 		self.statsWidget.setRightRangeSensorDistance(str(rightDist))
 		
-		self.dT1 = self.dT1 + 1
-		self.dT2 = self.dT2 + 1
-	
+		self.setLeftMotorSpeed(self.dT1 + 1)
+		self.setRightMotorSpeed(self.dT2 + 1)
+		
 		self.T1 = 0
 		self.T2 = 0
-
+	
+	
 	def increaseLeftMotorSpeed(self, percent):
 		speed = self.dT1 + (percent / 100.0) * Robot.MaxSpeed
 		print('speed: %f, dT1: %f, percent: %f, MaxSpeed: %f' % (speed, self.dT1, percent, Robot.MaxSpeed))
