@@ -175,23 +175,25 @@ class Robot():
 	def increaseLeftMotorSpeed(self, percent):
 		speed = self.dT1 + (percent / 100.0) * Robot.MaxSpeed
 		#print('speed: %f, dT1: %f, percent: %f, MaxSpeed: %f' % (speed, self.dT1, percent, Robot.MaxSpeed))
-		if speed < 0:
-			speed = 0
+		if speed < - Robot.MaxSpeed:
+			speed = - Robot.MaxSpeed
 		elif speed > Robot.MaxSpeed:
 			speed = Robot.MaxSpeed
 		
 		self.setLeftMotorSpeed(speed)
 	
+	
 	def increaseRightMotorSpeed(self, percent):
 		speed = self.dT2 + (percent / 100.0) * Robot.MaxSpeed
 		#print('speed: %f, dT2: %f, percent: %f, MaxSpeed: %f' % (speed, self.dT2, percent, Robot.MaxSpeed))
-		if speed < 0:
-			speed = 0
+		if speed < - Robot.MaxSpeed:
+			speed = - Robot.MaxSpeed
 		elif speed > Robot.MaxSpeed:
 			speed = Robot.MaxSpeed
 		
 		self.setRightMotorSpeed(speed)
-
+	
+	
 	def setLeftMotorSpeed(self, speed):		
 		self.dT1 = speed
 		self.statsWidget.setLeftMotorSpeed(str(speed))
