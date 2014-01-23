@@ -46,14 +46,14 @@ class RangeSensor(object):
 		
 		coord = self.rotate()
 	
-		x0 = self.robot.posX
-		y0 = self.robot.posY
+		x0 = round(self.robot.posX)
+		y0 = round(self.robot.posY)
 		
 		dx = coord[0] * RangeSensor.MAX_DISTANCE
 		dy = coord[1] * RangeSensor.MAX_DISTANCE
 		
-		x1 = x0 + dx
-		y1 = y0 + dy
+		x1 = round(x0 + dx)
+		y1 = round(y0 + dy)
 		
 		#color = QtGui.QColor(0xFF0000)
 		painter.fillRect(x0, y0, 1, 1, color)

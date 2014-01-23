@@ -198,7 +198,7 @@ class Map(QtGui.QFrame):
 		
 		color = QtGui.QColor(0xffffff)
 		painter.setPen(0xff0000)
-		QtCore.qDebug('%d %d %d %d' % (rect.top(), rect.left(), rect.bottom(), rect.right())) 
+		#QtCore.qDebug('[sim_map.Map.paintEvent] %d %d %d %d' % (rect.top(), rect.left(), rect.bottom(), rect.right())) 
 		painter.fillRect(0, 0, rect.right(), rect.bottom(), color)
 		
 		for obj in self.objects:

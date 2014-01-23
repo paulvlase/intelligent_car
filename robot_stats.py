@@ -50,11 +50,9 @@ class RobotStatsWidget(QtGui.QWidget):
 		
 		self.lbl1Value.setText(speed)
 		self.repaint()
-		self.refresh()
 		
 	
 	def setRightMotorSpeed(self, speed):
 		
 		self.lbl2Value.setText(speed)
 		self.repaint()
-		self.refresh()

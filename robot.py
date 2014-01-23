@@ -25,8 +25,8 @@ class Robot():
 	
 	def __init__(self, posX, posY, posTheta):
 		
-		self.w = 10
-		self.h = 15
+		self.w = 15
+		self.h = 10
 		
 		self.leftRangeSensor = RangeSensor(self, 0, 1)
 		self.frontRangeSensor = RangeSensor(self, 1, 0)
@@ -45,7 +45,7 @@ class Robot():
 		self.logicalY = 0
     
 		self.Rw = 9
-		self.Tr = 24
+		self.Tr = 240
 		self.D  = 9
 		
 		self.dT1 = 0
@@ -84,25 +84,25 @@ class Robot():
 			dRealY = R * (math.cos(self.heading) - math.cos(dHeading + self.heading))
 		
 		#TODO: This is wrong
-		dHeading2 = 2 * math.pi * (self.Rw / self.D) * \
-				(self.dT1 - self.dT2) / self.Tr
+		#dHeading2 = 2 * math.pi * (self.Rw / self.D) * \
+		#		(self.dT1 - self.dT2) / self.Tr
 
 		
 		#TODO: This is wrong
-		dRealX2 = self.Rw * math.sin(self.heading) * \
-				(self.dT1 + self.dT2) * math.pi / self.Tr
-		dRealY2 = self.Rw * math.cos(self.heading) * \
-				(self.dT1 + self.dT2) * math.pi / self.Tr
+		#dRealX2 = self.Rw * math.sin(self.heading) * \
+		#		(self.dT1 + self.dT2) * math.pi / self.Tr
+		#dRealY2 = self.Rw * math.cos(self.heading) * \
+		#		(self.dT1 + self.dT2) * math.pi / self.Tr
 	
 		#print('dHeading: ' + str(dHeading2) + ', dRealX2: ' + str(dRealX2) + ', dRealY2: ' + str(dRealY2))
 		#print('dRealTheta: ' + str(dHeading) + ', dRealX: ' + str(dRealX) + ', dRealY: ' + str(dRealY))
 		
-		self.posTheta = self.posTheta + dHeading2
-		self.heading = self.heading + dHeading2
-		self.posX = self.posX + dRealX2
-		self.posY = self.posY + dRealY2
+		self.posTheta = self.posTheta + dHeading
+		self.heading = self.heading + dHeading
+		self.posX = self.posX + dRealX
+		self.posY = self.posY + dRealY
 		
-		print('heading: ' + str(self.heading) + ', posX: ' + str(self.posX) + ', posY: ' + str(self.posY))
+		#print('heading: ' + str(self.heading) + ', posX: ' + str(self.posX) + ', posY: ' + str(self.posY))
 		
 		self.counter += 1
 		if self.counter == 5:
@@ -150,34 +150,41 @@ class Robot():
 	
 	def nextStep(self):
 		
-		#self.dT1 = self.dT1 + 1
-		#self.dT2 = self.dT2 + 1
+		self.dT1 = self.dT1 + 1
+		self.dT2 = self.dT2 + 1
 	
 		self.T1 = 0
 		self.T2 = 0
 
 	def increaseLeftMotorSpeed(self, percent):
-		speed = self.dT1 + percent / 100 * Robot.MaxSpeed
-		if speed > Robot.MaxSpeed:
+		speed = self.dT1 + (percent / 100.0) * Robot.MaxSpeed
+		print('speed: %f, dT1: %f, percent: %f, MaxSpeed: %f' % (speed, self.dT1, percent, Robot.MaxSpeed))
+		if speed < 0:
+			speed = 0
+		elif speed > Robot.MaxSpeed:
 			speed = Robot.MaxSpeed
-			
-		self.setLeftMotorSpeed(self, speed)
+		
+		self.setLeftMotorSpeed(speed)
 	
 	def increaseRightMotorSpeed(self, percent):
-		speed = self.dT2 + percent / 100 * Robot.MaxSpeed
-		if speed > Robot.MaxSpeed:
+		speed = self.dT2 + (percent / 100.0) * Robot.MaxSpeed
+		print('speed: %f, dT2: %f, percent: %f, MaxSpeed: %f' % (speed, self.dT2, percent, Robot.MaxSpeed))
+		if speed < 0:
+			speed = 0
+		elif speed > Robot.MaxSpeed:
 			speed = Robot.MaxSpeed
-			
-		self.setRightMotorSpeed(self, speed)
+		
+		self.setRightMotorSpeed(speed)
 
 	def setLeftMotorSpeed(self, speed):		
 		self.dT1 = speed
 		self.statsWidget.setLeftMotorSpeed(str(speed))
-
+		print('dT1: %f dT2: %f' % (self.dT1, self.dT2))
 
 	def setRightMotorSpeed(self, speed):
 		self.dT2 = speed
 		self.statsWidget.setRightMotorSpeed(str(speed))
+		print('dT1: %f dT2: %f' % (self.dT1, self.dT2)) 
 		
 	
 	def getStatsWidget(self):
