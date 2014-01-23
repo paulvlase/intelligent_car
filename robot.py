@@ -78,19 +78,19 @@ class Robot(object):
 			dRealY = R * (math.cos(self.realTheta) - math.cos(dRealTheta + self.realTheta))
 		
 		#TODO: This is wrong
-		#dRealTheta = 2 * math.pi * (self.Rw / self.D) * \
-		#		(self.dT1 + self.dT2) / self.Tr
-		
-		self.realTheta = self.realTheta + dRealTheta
+		dRealTheta2 = 2 * math.pi * (self.Rw / self.D) * \
+				(self.dT1 - self.dT2) / self.Tr
 		
 		#TODO: This is wrong
-		#dRealX = self.Rw * math.cos(self.realTheta) * \
-		#		(self.dT1 - self.dT2) * math.pi / self.Tr
-		#dRealY = self.Rw * math.sin(self.realTheta) * \
-		#		(self.dT1 - self.dT2) * math.pi / self.Tr
+		dRealX2 = self.Rw * math.cos(self.realTheta) * \
+				(self.dT1 + self.dT2) * math.pi / self.Tr
+		dRealY2 = self.Rw * math.sin(self.realTheta) * \
+				(self.dT1 + self.dT2) * math.pi / self.Tr
 	
+		print('dRealTheta2: ' + str(dRealTheta2) + ', dRealX2: ' + str(dRealX2) + ', dRealY2: ' + str(dRealY2))
 		print('dRealTheta: ' + str(dRealTheta) + ', dRealX: ' + str(dRealX) + ', dRealY: ' + str(dRealY))
-	
+		
+		self.realTheta = self.realTheta + dRealTheta
 		self.realX = self.realX + dRealX
 		self.realY = self.realY + dRealY
 		

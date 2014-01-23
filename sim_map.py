@@ -249,6 +249,7 @@ class Map(QtGui.QFrame):
 				ImageMap.image.save("image.jpg")
 			
 			self.robot.move()
+			self.repaint()
 		else:
 			super(Map, self).timerEvent(event)
 	
