@@ -19,7 +19,7 @@ class Map(QtGui.QFrame):
 	
 	MapWidth = 1024
 	MapHeight = 640
-	Speed = 200
+	Speed = 100
 	
 	def __init__(self, parent):
 		super(Map, self).__init__(parent)

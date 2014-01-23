@@ -3,9 +3,10 @@
 import math
 from PyQt4 import QtCore, QtGui
 
+from encoder import Encoder
+from image_map import ImageMap
 from range_sensor import RangeSensor
 from robot_stats import RobotStatsWidget
-from encoder import Encoder
 
 
 """
@@ -68,14 +69,19 @@ class Robot():
 		b = 9
 		
 		if (self.dT2 - self.dT1) < 0.00001:
+			
 			dHeading = 0
 			dRealX = self.dT1 * math.cos(self.heading)
 			dRealY = self.dT1 * math.sin(self.heading)
+			
 		elif (self.dT2 - self.dT1) > 24:
+			
 			dHeading = (self.dT2 - self.dT1) / b
 			dRealX = 0
 			dRealY = 0
+			
 		else:
+			
 			R = b / 2 * (self.dT2 + self.dT1) / (self.dT2 - self.dT1)
 		
 			dHeading = (self.dT2 - self.dT1) / b
@@ -97,10 +103,11 @@ class Robot():
 		#print('dHeading: ' + str(dHeading2) + ', dRealX2: ' + str(dRealX2) + ', dRealY2: ' + str(dRealY2))
 		#print('dRealTheta: ' + str(dHeading) + ', dRealX: ' + str(dRealX) + ', dRealY: ' + str(dRealY))
 		
-		self.posTheta = self.posTheta + dHeading2
-		self.heading = self.heading + dHeading2
-		self.posX = self.posX + dRealX2
-		self.posY = self.posY + dRealY2
+		if self.checkCollision(self.posX + dRealX2, self.posY + dRealY2) == False:
+			self.posTheta = self.posTheta + dHeading2
+			self.heading = self.heading + dHeading2
+			self.posX = self.posX + dRealX2
+			self.posY = self.posY + dRealY2
 		
 		#print('heading: ' + str(self.heading) + ', posX: ' + str(self.posX) + ', posY: ' + str(self.posY))
 		
@@ -167,7 +174,7 @@ class Robot():
 	
 	def increaseLeftMotorSpeed(self, percent):
 		speed = self.dT1 + (percent / 100.0) * Robot.MaxSpeed
-		print('speed: %f, dT1: %f, percent: %f, MaxSpeed: %f' % (speed, self.dT1, percent, Robot.MaxSpeed))
+		#print('speed: %f, dT1: %f, percent: %f, MaxSpeed: %f' % (speed, self.dT1, percent, Robot.MaxSpeed))
 		if speed < 0:
 			speed = 0
 		elif speed > Robot.MaxSpeed:
@@ -177,7 +184,7 @@ class Robot():
 	
 	def increaseRightMotorSpeed(self, percent):
 		speed = self.dT2 + (percent / 100.0) * Robot.MaxSpeed
-		print('speed: %f, dT2: %f, percent: %f, MaxSpeed: %f' % (speed, self.dT2, percent, Robot.MaxSpeed))
+		#print('speed: %f, dT2: %f, percent: %f, MaxSpeed: %f' % (speed, self.dT2, percent, Robot.MaxSpeed))
 		if speed < 0:
 			speed = 0
 		elif speed > Robot.MaxSpeed:
@@ -188,13 +195,28 @@ class Robot():
 	def setLeftMotorSpeed(self, speed):		
 		self.dT1 = speed
 		self.statsWidget.setLeftMotorSpeed(str(speed))
-		print('dT1: %f dT2: %f' % (self.dT1, self.dT2))
+		#print('dT1: %f dT2: %f' % (self.dT1, self.dT2))
 
 	def setRightMotorSpeed(self, speed):
 		self.dT2 = speed
 		self.statsWidget.setRightMotorSpeed(str(speed))
-		print('dT1: %f dT2: %f' % (self.dT1, self.dT2)) 
+		#print('dT1: %f dT2: %f' % (self.dT1, self.dT2)) 
+	
+	def checkCollision(self, newPosX, newPosY):
+		r = max(self.w, self.h) / 2
 		
+		x1 = newPosX - r
+		y1 = newPosY - r
+		x2 = newPosX + r
+		y2 = newPosX + r
+		
+		if x1 < 0 or y1 < 0 or\
+			x2 >= ImageMap.image.width() or\
+			y2 >= ImageMap.image.height():
+			return True
+	
+		return False
+	
 	
 	def getStatsWidget(self):
 		return self.statsWidget

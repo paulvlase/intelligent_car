@@ -75,6 +75,12 @@ class RangeSensor(object):
 		
 		while True:
 			#print('range_sensor.RangeSensor.draw x0: ' + str(x0) + ' y0: ' + str(y0) + ' x1: ' + str(x1) + ' y1: ' + str(y1))
+			if x0 < 0 or y0 < 0 or x0 >= ImageMap.image.width() or y0 >= ImageMap.image.height():
+				return
+			
+			if ImageMap.image.pixel(x0, y0) != 0xFFFFFFFF:
+				return
+			
 			painter.fillRect(x0, y0, 1, 1, color)
 			
 			if x0 == x1 and y0 == y1:
@@ -135,13 +141,22 @@ class RangeSensor(object):
 			#TODO cleanup
 			#print('range_sensor.RangeSensor.draw x0: ' + str(x0) + ' y0: ' + str(y0) + ' x1: ' + str(x1) + ' y1: ' + str(y1))
 			#print('%08X' % (ImageMap.image.pixel(x0, y0),))
-			print('%d - %d' % (x0, y0))
+			#print('%d - %d' % (x0, y0))
+			
 			if x0 < 0 or y0 < 0 or x0 >= ImageMap.image.width() or y0 >= ImageMap.image.height():
-				print('Ies din plansa ca prostul')
-				return math.sqrt(math.pow(sX0 - px, 2) + math.pow(sY0 - py, 2))
+				#print('Ies din plansa ca prostul')
+				d = math.sqrt(math.pow(sX0 - px, 2.0) + math.pow(sY0 - py, 2.0))
+				
+				if d > 1000:
+					print('A: %d - %d' % (px, py))
+					return d
 			
 			if ImageMap.image.pixel(x0, y0) != 0xFFFFFFFF:
-				return math.sqrt(math.pow(sX0 - x0, 2) + math.pow(sY0 - y0, 2))
+				d =  math.sqrt(math.pow(sX0 - x0, 2.0) + math.pow(sY0 - y0, 2.0))
+				
+				if d > 1000:
+					print('B: %d - %d' % (px, py))
+					return d
 			
 			if x0 == x1 and y0 == y1:
 				return RangeSensor.MAX_DISTANCE
