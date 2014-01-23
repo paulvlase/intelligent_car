@@ -202,6 +202,10 @@ class Robot():
 		self.statsWidget.setRightMotorSpeed(str(speed))
 		#print('dT1: %f dT2: %f' % (self.dT1, self.dT2)) 
 	
+	
+	'''
+		O verificare de coliziune rudimentara
+	'''
 	def checkCollision(self, newPosX, newPosY):
 		r = max(self.w, self.h) / 2
 		
@@ -213,6 +217,15 @@ class Robot():
 		if x1 < 0 or y1 < 0 or\
 			x2 >= ImageMap.image.width() or\
 			y2 >= ImageMap.image.height():
+			return True
+	
+		if ImageMap.image.pixel(x1, y1) != 0xFFFFFFFF:
+			return True
+		if ImageMap.image.pixel(x1, y2) != 0xFFFFFFFF:
+			return True
+		if ImageMap.image.pixel(x2, y1) != 0xFFFFFFFF:
+			return True
+		if ImageMap.image.pixel(x2, y2) != 0xFFFFFFFF:
 			return True
 	
 		return False
