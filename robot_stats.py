@@ -1,5 +1,8 @@
 
+import math
 from PyQt4 import QtCore, QtGui
+
+from global_config import GlobalConfig
 
 
 class RobotStatsWidget(QtGui.QWidget):
@@ -13,6 +16,8 @@ class RobotStatsWidget(QtGui.QWidget):
 	
 	
 	def initStatsWidget(self):
+		
+		self.setFixedWidth(GlobalConfig.StatsWidgetWidth)
 		
 		self.lbl1Text = QtGui.QLabel('L motor speed: ', self)
 		self.lbl1Value = QtGui.QLabel('0', self)
@@ -39,7 +44,15 @@ class RobotStatsWidget(QtGui.QWidget):
 		self.lbl5Value.setFixedWidth(50)
 		self.lbl5Value.setAlignment(QtCore.Qt.AlignRight)
 		
-		self.bt1 = QtGui.QPushButton('Buton mare', self)
+		self.lbl6Text = QtGui.QLabel('Orientation: ', self)
+		self.lbl6Value = QtGui.QLabel('0', self)
+		self.lbl6Value.setFixedWidth(50)
+		self.lbl6Value.setAlignment(QtCore.Qt.AlignRight)
+		
+		self.lbl7Text = QtGui.QLabel('Target dir: ', self)
+		self.lbl7Value = QtGui.QLabel('0', self)
+		self.lbl7Value.setFixedWidth(50)
+		self.lbl7Value.setAlignment(QtCore.Qt.AlignRight)
 		
 		hbox1 = QtGui.QHBoxLayout()
 		hbox1.addWidget(self.lbl1Text)
@@ -66,13 +79,24 @@ class RobotStatsWidget(QtGui.QWidget):
 		hbox5.addStretch(1)
 		hbox5.addWidget(self.lbl5Value)
 		
+		hbox6 = QtGui.QHBoxLayout()
+		hbox6.addWidget(self.lbl6Text)
+		hbox6.addStretch(1)
+		hbox6.addWidget(self.lbl6Value)
+		
+		hbox7 = QtGui.QHBoxLayout()
+		hbox7.addWidget(self.lbl7Text)
+		hbox7.addStretch(1)
+		hbox7.addWidget(self.lbl7Value)
+		
 		vbox = QtGui.QVBoxLayout()
 		vbox.addLayout(hbox1)
 		vbox.addLayout(hbox2)
 		vbox.addLayout(hbox3)
 		vbox.addLayout(hbox4)
 		vbox.addLayout(hbox5)
-		vbox.addWidget(self.bt1)
+		vbox.addLayout(hbox6)
+		vbox.addLayout(hbox6)
 		vbox.addStretch(1)
 		
 		self.setLayout(vbox)
@@ -92,17 +116,39 @@ class RobotStatsWidget(QtGui.QWidget):
 	
 	def setLeftRangeSensorDistance(self, dist):
 		
-		self.lbl3Value.setText(dist)
+		dist_str = '%.2f' % dist
+		self.lbl3Value.setText(dist_str)
+		
 		self.repaint()
 	
 	
 	def setFrontRangeSensorDistance(self, dist):
 		
-		self.lbl4Value.setText(dist)
+		dist_str = '%.2f' % dist
+		self.lbl4Value.setText(dist_str)
+
 		self.repaint()
 	
 	
 	def setRightRangeSensorDistance(self, dist):
 		
-		self.lbl5Value.setText(dist)
+		dist_str = '%.2f' % dist
+		self.lbl5Value.setText(dist_str)
+
+		self.repaint()
+
+
+	def setOrientation(self, angle):
+		
+		angle_str = '%.2f' % ((angle * 180) / math.pi)
+		self.lbl6Value.setText(angle_str)
+		
+		self.repaint()
+	
+	
+	def setTargetDirection(self, angle):
+		
+		angle_str = '%.2f' % ((angle * 180) / math.pi)
+		self.lbl7Value.setText(angle_str)
+		
 		self.repaint()

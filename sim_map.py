@@ -6,6 +6,8 @@ from PyQt4 import QtCore, QtGui
 from image_map import ImageMap
 from robot import Robot
 from rectangle import Rectangle
+from target import Target
+from sim_stats import SimStats
 
 
 """
@@ -21,6 +23,12 @@ class Map(QtGui.QFrame):
 	MapHeight = 640
 	Speed = 100
 	
+	NoAction = 0
+	PlaceBlockAction = 1
+	PlaceRobotAction = 2
+	PlaceTargetAction = 3
+	
+	
 	def __init__(self, parent):
 		super(Map, self).__init__(parent)
 	
@@ -33,7 +41,6 @@ class Map(QtGui.QFrame):
 		QtCore.qDebug('sim_map.Map.initMap')
 		
 		self.timer = QtCore.QBasicTimer()
-		self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
 		self.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Raised)
 		
 		self.objects = []
@@ -49,21 +56,15 @@ class Map(QtGui.QFrame):
 		self.dragYend = -1
 		self.dragObject = None
 	
+		self.mouseActionType = Map.NoAction
 		self.saveToImage = True
 		
-		self.robot = Robot(100, 100, 0)
-		
 		self.mapChanged = False
-	
-		self.statsWidget = self.robot.getStatsWidget()
-		self.setStatsWidget()
-	
-	def getObjectAt(self, x, y):
-		pass
-	
-	
-	def setObjectAt(self, x, y, shape):
-		pass
+		self.robot = None
+		self.target = None
+		self.vbox = QtGui.QVBoxLayout()
+		self.setLayout(self.vbox)
+		self.simStats = SimStats(self)
 	
 	
 	def load(self, fname):
@@ -96,6 +97,9 @@ class Map(QtGui.QFrame):
 				print(line)
 				self.objects.append(Rectangle(x, y, w, h))
 	
+			self.setFixedSize(Map.MapWidth, Map.MapHeight)
+			self.repaint()
+		
 	
 	def save(self, fname):
 		print("[sim_map.Map.save]")
@@ -150,45 +154,136 @@ class Map(QtGui.QFrame):
 	
 	
 	def mousePressEvent(self, QMouseEvent):
-		self.dragXstart = QMouseEvent.x()
-		self.dragYstart = QMouseEvent.y()
 		
-		self.dragObject = Rectangle()
-		self.dragObject.updateDrag(self.dragXstart,
-				self.dragYstart, self.dragXstart, self.dragYstart)
+		x = QMouseEvent.x()
+		y = QMouseEvent.y()
 		
-		#TODO
-		#print(QMouseEvent.pos())
-	
+		if self.mouseActionType == Map.NoAction:
+			
+			self.dragXstart = x
+			self.dragYstart = y
+		
+			self.dragObject = Rectangle()
+			self.dragObject.updateDrag(self.dragXstart,
+					self.dragYstart, self.dragXstart, self.dragYstart)
+		
+			self.mouseActionType = Map.PlaceBlockAction
+		
+			#TODO cleanup
+			#print(QMouseEvent.pos())
+		
+		elif self.mouseActionType == Map.PlaceRobotAction:
+			
+			self.robot = Robot(x, y, 0)
+			self.setStatsWidget()
+			
 	
 	def mouseMoveEvent(self, QMouseEvent):
-		self.dragXend = QMouseEvent.x()
-		self.dragYend = QMouseEvent.y()
+		x = QMouseEvent.x()
+		y = QMouseEvent.y()
 		
-		self.dragObject.updateDrag(self.dragXstart,
-				self.dragYstart, self.dragXend, self.dragYend)
+		if self.mouseActionType == Map.PlaceBlockAction:
+			
+			self.dragXend = x
+			self.dragYend = y
 		
-		#TODO
-		#print(QMouseEvent.pos())
-		self.repaint()
+			self.dragObject.updateDrag(self.dragXstart,
+					self.dragYstart, self.dragXend, self.dragYend)
+		
+			#TODO cleanup
+			#print(QMouseEvent.pos())
+			self.repaint()
 	
+		elif self.mouseActionType == Map.PlaceRobotAction:
+			
+			ab = x - self.robot.posX
+			mb = math.sqrt(math.pow(x - self.robot.posX, 2) + math.pow(y - self.robot.posY, 2))
+			if mb == 0:
+				newTheta = 0
+			else:
+				newTheta = math.acos(ab / mb)
+				
+				if y < self.robot.posY:
+					newTheta = math.pi - newTheta + math.pi
+				
+			print('theta: %f' % newTheta)
+			self.robot.setOrientation(newTheta)
+			self.repaint()
 	
+		
 	def mouseReleaseEvent(self, QMouseEvent):
-		self.dragXend = QMouseEvent.x()
-		self.dragYend = QMouseEvent.y()
 		
-		self.dragObject.updateDrag(self.dragXstart, self.dragYstart,
-				self.dragXend, self.dragYend)
+		x = QMouseEvent.x()
+		y = QMouseEvent.y()
 		
-		self.objects.append(self.dragObject)
-		self.dragObject = None
+		if self.mouseActionType == Map.PlaceRobotAction:
+
+			self.mouseActionType = Map.NoAction
+			
+			self.simStats.btPlaceRobot.setEnabled(False)
+			
+			ab = x - self.robot.posX
+			mb = math.sqrt(math.pow(x - self.robot.posX, 2) + math.pow(y - self.robot.posY, 2))
+			if mb == 0:
+				newTheta = 0
+			else:
+				newTheta = math.acos(ab / mb)
+			
+			if y < self.robot.posY:
+				newTheta = math.pi - newTheta + math.pi
+			
+			self.robot.setOrientation(newTheta)
+			
+			if self.target is not None:
+				
+				x1 = self.target.x - self.robot.posX
+				y1 = self.target.y - self.robot.posY
+				
+				x2 = x - self.robot.posX
+				y2 = y - self.robot.posY 
+				
+				ab = x1 * x2 + y1 * y2
+				ma = math.sqrt(x1 * x1 + y1 * y1)
+				mb = math.sqrt(x2 * x2 + y2 * y2)
+			
+			if ma == 0 or mb == 0:
+				theta = 0
+			else:
+				theta = math.acos(ab / mb)
+			
+			if  < self.robot.posY:
+				newTheta = math.pi - newTheta + math.pi
+			
+			self.repaint()
+			
+		elif self.mouseActionType == Map.PlaceTargetAction:
+			
+			self.target = Target(x, y)
+			self.mouseActionType = Map.NoAction
+			
+			self.simStats.btPlaceTarget.setEnabled(False)
+			self.simStats.btPlaceRobot.setEnabled(True)
+			
+			self.repaint()
+			
+		elif self.mouseActionType == Map.PlaceBlockAction:
+			
+			self.dragXend = x
+			self.dragYend = y
+			
+			self.dragObject.updateDrag(self.dragXstart, self.dragYstart,
+					self.dragXend, self.dragYend)
 		
-		self.saveToImage = True
-		self.setChanged(True)
+			self.objects.append(self.dragObject)
+			self.dragObject = None
 		
-		#TODO
-		#print(QMouseEvent.pos())
-		self.repaint()
+			self.saveToImage = True
+			self.setChanged(True)
+		
+			self.mouseActionType = Map.NoAction
+			#TODO
+			#print(QMouseEvent.pos())
+			self.repaint()
 	
 	
 	def paintEvent(self, event):
@@ -224,8 +319,11 @@ class Map(QtGui.QFrame):
 		if not self.dragObject is None:
 			self.dragObject.draw(painter)
 			
-		if self.saveToImage != True:
+		if self.robot is not None and self.saveToImage != True:
 			self.robot.draw(painter)
+		
+		if self.target is not None and self.saveToImage != True:
+			self.target.draw(painter)
 	
 	
 	def keyPressEvent(self, event):
@@ -267,8 +365,9 @@ class Map(QtGui.QFrame):
 		
 		if event.timerId() == self.timer.timerId():
 			
-			self.robot.move()
-			self.repaint()
+			if self.robot is not None:
+				self.robot.move()
+				self.repaint()
 		
 		else:
 			super(Map, self).timerEvent(event)
@@ -287,6 +386,33 @@ class Map(QtGui.QFrame):
 		self.changedStatus.emit(bool(self.mapChanged))
 	
 	
+	def getStatsWidget(self):
+		
+		widgets = []
+		
+		widgets.append(self.simStats)
+		
+		if self.robot is not None:
+			widgets.append(self.robot.getStatsWidget())
+	
+		return widgets
+	
+	
 	def setStatsWidget(self):
+		
+		widgets = []
+		
+		widgets.append(self.simStats)
+		
+		if self.robot is not None:
+			widgets.append(self.robot.getStatsWidget())
+		
+		self.parent.setStatsWidgets(widgets)
 
-		self.parent.setStatsWidget(self.statsWidget)
+
+	def placeRobot(self):
+		self.mouseActionType = Map.PlaceRobotAction
+		
+		
+	def placeTarget(self):
+		self.mouseActionType = Map.PlaceTargetAction

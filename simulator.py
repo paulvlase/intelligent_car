@@ -73,17 +73,19 @@ class Simulator(QtGui.QMainWindow):
 	
 	
 	def newMap(self):
+		
 		QtCore.qDebug('simulator.Simulator.newMap')
 		
 		self.fname = QtCore.QString('')
 		self.placeholder = Placeholder(self)
 		
 		self.setWindowTitle('Untitled - Simulator')
-		self.setCentralWidget(Placeholder(self))
+		self.setCentralWidget(self.placeholder)
 		self.placeholder.simMap.changedStatus[bool].connect(self.setChanged)
 	
 	
 	def openMap(self):
+	
 		QtCore.qDebug('simulator.Simulator.openMap')
 		
 		if self.saveMap(True) == True:
@@ -92,33 +94,37 @@ class Simulator(QtGui.QMainWindow):
 		
 			if fname.length > 0:
 				self.fname = fname
-				self.simMap = Map(self)
-				
+
+				self.placeholder = Placeholder(self)
+
 				self.setWindowTitle(self.fname + ' - Simulator')
-				self.setCentralWidget(Placeholder(self))
+				self.setCentralWidget(self.placeholder)
 				
 				self.placeholder.simMap.load(self.fname)
+				self.placeholder.simMap.changedStatus[bool].connect(self.setChanged)
 			
 			print(self.fname)
 	
 	
 	def saveMap(self, confirmation = False):
+	
 		QtCore.qDebug('simulator.Simulator.saveMap')
 		
 		if  (not self.placeholder is None) and (not self.placeholder.simMap is None) and self.placeholder.simMap.changed():
 			if self.fname.length() > 0:
+		
 				msgBox = QtGui.QMessageBox();
 				msgBox.setText("The document has been modified.");
 				msgBox.setInformativeText("Do you want to save your changes?");
 				msgBox.setStandardButtons(QtGui.QMessageBox.Save |
 						QtGui.QMessageBox.Discard | QtGui.QMessageBox.Cancel);
-				msgBox.setDefaultButton(QMessageBox.Save);
+				msgBox.setDefaultButton(QtGui.QMessageBox.Save);
 				ret = msgBox.exec_();
 				
-				if ret == QMessageBox.Save:
+				if ret == QtGui.QMessageBox.Save:
 					self.placeholder.simMap.save(self.fname)
 					return True
-				elif ret == QMessageBox.Discard:
+				elif ret == QtGui.QMessageBox.Discard:
 					return True
 				else:
 					return False
@@ -128,12 +134,14 @@ class Simulator(QtGui.QMainWindow):
 			
 				if fname.length() > 0:
 					self.fname = fname
-			
+					self.setWindowTitle(self.fname)
+				
 			if self.fname.length() > 0:
 				self.placeholder.simMap.save(self.fname)
 			
 			print(self.fname)
 		return True
+	
 	
 	def saveAsMap(self):
 		QtCore.qDebug('simulator.Simulator.saveAsMap')

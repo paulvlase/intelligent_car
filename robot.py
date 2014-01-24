@@ -34,6 +34,8 @@ class Robot():
 		self.posX = posX
 		self.posY = posY
     
+		self.targetTheta = 0
+    
 		self.logicalTheta = 0
 		self.logicalX = 0
 		self.logicalY = 0
@@ -58,6 +60,17 @@ class Robot():
 		self.rightRangeSensor = RangeSensor(self, self.h / 2 + 1, 0, 1)
 	
 		self.statsWidget = RobotStatsWidget(self)
+	
+	
+	def setOrientation(self, posTheta):
+		
+		self.posTheta = posTheta
+		self.statsWidget.setOrientation(self.posTheta)
+	
+	def setTargetDirection(self, targetTheta):
+		
+		self.targetTheta = targetTheta
+		self.statsWidget.setTargetDirection(self.targetTheta)
 	
 	def move(self):
 		
@@ -161,12 +174,12 @@ class Robot():
 		frontDist = self.frontRangeSensor.getDistance()
 		rightDist = self.rightRangeSensor.getDistance()
 
-		self.statsWidget.setLeftRangeSensorDistance(str(leftDist))
-		self.statsWidget.setFrontRangeSensorDistance(str(frontDist))
-		self.statsWidget.setRightRangeSensorDistance(str(rightDist))
+		self.statsWidget.setLeftRangeSensorDistance(leftDist)
+		self.statsWidget.setFrontRangeSensorDistance(frontDist)
+		self.statsWidget.setRightRangeSensorDistance(rightDist)
 		
-		self.setLeftMotorSpeed(self.dT1 + 1)
-		self.setRightMotorSpeed(self.dT2 + 1)
+		# self.setLeftMotorSpeed(self.dT1 + 1)
+		# self.setRightMotorSpeed(self.dT2 + 1)
 		
 		self.T1 = 0
 		self.T2 = 0
@@ -194,11 +207,12 @@ class Robot():
 		self.setRightMotorSpeed(speed)
 	
 	
-	def setLeftMotorSpeed(self, speed):		
+	def setLeftMotorSpeed(self, speed):
 		self.dT1 = speed
 		self.statsWidget.setLeftMotorSpeed(str(speed))
 		#print('dT1: %f dT2: %f' % (self.dT1, self.dT2))
-
+	
+	
 	def setRightMotorSpeed(self, speed):
 		self.dT2 = speed
 		self.statsWidget.setRightMotorSpeed(str(speed))
@@ -211,10 +225,10 @@ class Robot():
 	def checkCollision(self, newPosX, newPosY):
 		r = max(self.w, self.h) / 2
 		
-		x1 = newPosX - r
-		y1 = newPosY - r
-		x2 = newPosX + r
-		y2 = newPosX + r
+		x1 = newPosX - r - 1
+		y1 = newPosY - r - 1
+		x2 = newPosX + r + 1
+		y2 = newPosX + r + 1
 		
 		if x1 < 0 or y1 < 0 or\
 			x2 >= ImageMap.image.width() or\

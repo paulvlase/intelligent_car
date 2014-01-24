@@ -147,16 +147,16 @@ class RangeSensor(object):
 				
 				d = math.sqrt(math.pow(sX0 - px, 2.0) + math.pow(sY0 - py, 2.0))
 				
-				if d > 1000:
-					print('A: %d - %d' % (px, py))
+				if d < 0 or d > 1000:
+					print('A: %d - %d # %f' % (px, py, d))
 				return d
 			
 			if ImageMap.pixel(x0, y0) != 0xFFFFFFFF:
 				
 				d =  math.sqrt(math.pow(sX0 - x0, 2.0) + math.pow(sY0 - y0, 2.0))
 				
-				if d > 1000:
-					print('B: %d - %d' % (px, py))
+				if d < 0 or d > 1000:
+					print('B: %d - %d # %f' % (px, py, d))
 				return d
 			
 			if x0 == x1 and y0 == y1:

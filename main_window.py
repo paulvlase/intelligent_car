@@ -22,7 +22,7 @@ class MainWindow(QtGui.QFrame):
 		self.bt3.clicked.connect(self.parent.exitSim)
 		
 		vbox = QtGui.QVBoxLayout()
+		self.setLayout(vbox)
 		vbox.addWidget(self.bt1)
 		vbox.addWidget(self.bt2)
 		vbox.addWidget(self.bt3)
-		self.setLayout(vbox)
