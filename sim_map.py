@@ -208,6 +208,30 @@ class Map(QtGui.QFrame):
 				
 			print('theta: %f' % newTheta)
 			self.robot.setOrientation(newTheta)
+			
+			if self.target is not None:
+				
+				# I am computing the angle relative to Ox ax.
+				x = self.target.x - self.robot.posX
+				y = self.target.y - self.robot.posY
+				
+				ab = x
+				mb = math.sqrt(x * x + y * y)
+			
+				if mb == 0:
+					theta = 0
+				else:
+					theta = math.acos(ab / mb)
+				
+				if self.target.y < self.robot.posY:
+					theta = math.pi - theta + math.pi
+				
+				theta = theta - newTheta
+				if theta < 0:
+					theta = theta + 2 * math.pi
+				
+				self.robot.setTargetDirection(theta)
+			
 			self.repaint()
 	
 		
@@ -236,23 +260,26 @@ class Map(QtGui.QFrame):
 			
 			if self.target is not None:
 				
-				x1 = self.target.x - self.robot.posX
-				y1 = self.target.y - self.robot.posY
+				# I am computing the angle relative to Ox ax.
+				x = self.target.x - self.robot.posX
+				y = self.target.y - self.robot.posY
 				
-				x2 = x - self.robot.posX
-				y2 = y - self.robot.posY 
+				ab = x
+				mb = math.sqrt(x * x + y * y)
+			
+				if mb == 0:
+					theta = 0
+				else:
+					theta = math.acos(ab / mb)
 				
-				ab = x1 * x2 + y1 * y2
-				ma = math.sqrt(x1 * x1 + y1 * y1)
-				mb = math.sqrt(x2 * x2 + y2 * y2)
-			
-			if ma == 0 or mb == 0:
-				theta = 0
-			else:
-				theta = math.acos(ab / mb)
-			
-			if  < self.robot.posY:
-				newTheta = math.pi - newTheta + math.pi
+				if self.target.y < self.robot.posY:
+					theta = math.pi - theta + math.pi
+				
+				theta = theta - newTheta
+				if theta < 0:
+					theta = theta + 2 * math.pi
+				
+				self.robot.setTargetDirection(theta)
 			
 			self.repaint()
 			

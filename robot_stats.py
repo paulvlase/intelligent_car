@@ -96,21 +96,23 @@ class RobotStatsWidget(QtGui.QWidget):
 		vbox.addLayout(hbox4)
 		vbox.addLayout(hbox5)
 		vbox.addLayout(hbox6)
-		vbox.addLayout(hbox6)
+		vbox.addLayout(hbox7)
 		vbox.addStretch(1)
 		
 		self.setLayout(vbox)
 	
 	
 	def setLeftMotorSpeed(self, speed):
+		speed_str = '%.2f' % speed
 		
-		self.lbl1Value.setText(speed)
+		self.lbl1Value.setText(speed_str)
 		self.repaint()
 		
 	
 	def setRightMotorSpeed(self, speed):
+		speed_str = '%.2f' % speed
 		
-		self.lbl2Value.setText(speed)
+		self.lbl2Value.setText(speed_str)
 		self.repaint()
 	
 	

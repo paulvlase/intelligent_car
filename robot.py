@@ -70,6 +70,20 @@ class Robot():
 	def setTargetDirection(self, targetTheta):
 		
 		self.targetTheta = targetTheta
+		
+		if self.targetTheta > 2 * math.pi:
+			self.targetTheta = self.targetTheta % (2 * math.pi)
+		elif self.targetTheta < 0:
+			self.targetTheta = self.targetTheta % (2 * math.pi)
+
+		#if self.targetTheta > 2 * math.pi:
+		#	self.target = 2 * math.pi
+		#	print('targetTheta: %f' % self.targetTheta)
+		
+		#elif self.targetTheta < 0:
+		#	self.targetTheta = 0
+		#	print('targetTheta: %f' % self.targetTheta)
+		
 		self.statsWidget.setTargetDirection(self.targetTheta)
 	
 	def move(self):
@@ -117,10 +131,12 @@ class Robot():
 		#print('dRealTheta: ' + str(dHeading) + ', dRealX: ' + str(dRealX) + ', dRealY: ' + str(dRealY))
 		
 		if self.checkCollision(self.posX + dRealX2, self.posY + dRealY2) == False:
-			self.posTheta = self.posTheta + dHeading2
 			self.heading = self.heading + dHeading2
 			self.posX = self.posX + dRealX2
 			self.posY = self.posY + dRealY2
+		
+			self.setOrientation(self.posTheta)
+			self.setTargetDirection(self.targetTheta - dHeading2)
 		
 		#print('heading: ' + str(self.heading) + ', posX: ' + str(self.posX) + ', posY: ' + str(self.posY))
 		
@@ -178,8 +194,18 @@ class Robot():
 		self.statsWidget.setFrontRangeSensorDistance(frontDist)
 		self.statsWidget.setRightRangeSensorDistance(rightDist)
 		
-		# self.setLeftMotorSpeed(self.dT1 + 1)
-		# self.setRightMotorSpeed(self.dT2 + 1)
+		
+		dHeading2 = 2 * math.pi * (self.Rw / self.D) * \
+				(self.dT1 - self.dT2) / self.Tr
+		# dT = dT1 - dT2
+		dT = self.targetTheta * self.D * self.Tr / (2 * math.pi * self.Rw)
+		
+		if dT < 5:
+			self.setLeftMotorSpeed(24)
+			self.setRightMotorSpeed(24)
+		else:
+			self.setLeftMotorSpeed(dT)
+			self.setRightMotorSpeed(-dT)
 		
 		self.T1 = 0
 		self.T2 = 0
@@ -188,10 +214,6 @@ class Robot():
 	def increaseLeftMotorSpeed(self, percent):
 		speed = self.dT1 + (percent / 100.0) * Robot.MaxSpeed
 		#print('speed: %f, dT1: %f, percent: %f, MaxSpeed: %f' % (speed, self.dT1, percent, Robot.MaxSpeed))
-		if speed < - Robot.MaxSpeed:
-			speed = - Robot.MaxSpeed
-		elif speed > Robot.MaxSpeed:
-			speed = Robot.MaxSpeed
 		
 		self.setLeftMotorSpeed(speed)
 	
@@ -199,23 +221,31 @@ class Robot():
 	def increaseRightMotorSpeed(self, percent):
 		speed = self.dT2 + (percent / 100.0) * Robot.MaxSpeed
 		#print('speed: %f, dT2: %f, percent: %f, MaxSpeed: %f' % (speed, self.dT2, percent, Robot.MaxSpeed))
-		if speed < - Robot.MaxSpeed:
-			speed = - Robot.MaxSpeed
-		elif speed > Robot.MaxSpeed:
-			speed = Robot.MaxSpeed
 		
 		self.setRightMotorSpeed(speed)
 	
 	
 	def setLeftMotorSpeed(self, speed):
 		self.dT1 = speed
-		self.statsWidget.setLeftMotorSpeed(str(speed))
+		
+		if speed < - Robot.MaxSpeed:
+			speed = - Robot.MaxSpeed
+		elif speed > Robot.MaxSpeed:
+			speed = Robot.MaxSpeed
+		
+		self.statsWidget.setLeftMotorSpeed(speed)
 		#print('dT1: %f dT2: %f' % (self.dT1, self.dT2))
 	
 	
 	def setRightMotorSpeed(self, speed):
 		self.dT2 = speed
-		self.statsWidget.setRightMotorSpeed(str(speed))
+		
+		if speed < - Robot.MaxSpeed:
+			speed = - Robot.MaxSpeed
+		elif speed > Robot.MaxSpeed:
+			speed = Robot.MaxSpeed
+		
+		self.statsWidget.setRightMotorSpeed(speed)
 		#print('dT1: %f dT2: %f' % (self.dT1, self.dT2)) 
 	
 	
